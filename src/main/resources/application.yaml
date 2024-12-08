@@ -1,0 +1,11 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/geneticdb
+      database: geneticdb
+server:
+  port: 8080
+logging:
+  level:
+    root: INFO
+    org.springframework.data.mongodb: DEBUG
