@@ -1,6 +1,7 @@
 package br.ufsc.INE5429.searchable.service;
 
 import static br.ufsc.INE5429.searchable.utils.ConfigUtils.loadOrCreateKey;
+import static br.ufsc.INE5429.searchable.utils.CryptoUtils.encrypt;
 import static br.ufsc.INE5429.searchable.utils.CryptoUtils.hashGenomeSubsequence;
 
 import br.ufsc.INE5429.searchable.document.Genome;
@@ -51,7 +52,8 @@ public class GenomeService {
         for (int i = 0; i <= cleanedGenome.length() - K_SIZE; i++) {
             String subsequence = cleanedGenome.substring(i, i + K_SIZE);
             String hash = hashGenomeSubsequence(subsequence);
-            indexes.computeIfAbsent(hash, k -> new ArrayList<>()).add(i);
+            String encryptedHash = encrypt(hash, key);
+            indexes.computeIfAbsent(encryptedHash, k -> new ArrayList<>()).add(i);
         }
         newGenome.setIndex(indexes);
         genomeRepository.save(newGenome);
@@ -67,10 +69,11 @@ public class GenomeService {
             return ResponseEntity.badRequest().build();
         }
         String hash = hashGenomeSubsequence(request.getPattern());
+        String encryptedHash = encrypt(hash, key);
         return ResponseEntity.ok(
                 new GenomeIndexesResponse(
-                        genome.get().getIndex().containsKey(hash)
-                                ? genome.get().getIndex().get(hash)
+                        genome.get().getIndex().containsKey(encryptedHash)
+                                ? genome.get().getIndex().get(encryptedHash)
                                 : new ArrayList<>()));
     }
 
