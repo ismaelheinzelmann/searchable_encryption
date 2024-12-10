@@ -32,7 +32,7 @@ public class ConfigUtils {
 
     private static String generateNewKey() throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-        keyGenerator.init(128); // Using 128-bit AES key size
+        keyGenerator.init(128);
         SecretKey secretKey = keyGenerator.generateKey();
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }

@@ -74,6 +74,33 @@ public class GenomeService {
                                 : new ArrayList<>()));
     }
 
+    public ResponseEntity<ResponseMessage> getIndexesLinear(GenomeIndexesRequest request) throws Exception {
+        var genome = genomeRepository.findById(request.getGenomeId());
+        if (genome.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (request.getPattern().length() != K_SIZE) {
+            return ResponseEntity.badRequest().build();
+        }
+        String decryptedGenome = CryptoUtils.decrypt(genome.get().getEncryptedGenome(), key);
+        System.out.println(decryptedGenome.length());
+        List<Integer> indexes = new ArrayList<>();
+        String pattern = request.getPattern();
+        for (int i = 0; i <= decryptedGenome.length() - K_SIZE; i++) {
+            if (decryptedGenome.substring(i, i + K_SIZE).equals(pattern)) {
+                indexes.add(i);
+            }
+        }
+        if (indexes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(
+                new GenomeIndexesResponse(
+                        indexes));
+
+    }
+
     public ResponseEntity<ResponseMessage> getGenomes() {
         var genomes = genomeRepository.findAll();
         List<GenomeDTO> genomesList = new ArrayList<>();
@@ -84,7 +111,7 @@ public class GenomeService {
     }
 
     private String cleanGenomeSequence(String genomeSequence) {
-        return genomeSequence.replaceAll("[^ACGT]", "");
+        return genomeSequence.replaceAll("[^ACGTN]", "");
     }
 
     private String convertRnaToDna(String rnaGenome) {
