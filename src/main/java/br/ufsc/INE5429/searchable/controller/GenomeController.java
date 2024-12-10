@@ -42,6 +42,18 @@ public class GenomeController {
         }
     }
 
+    @PostMapping("/indexes-linear")
+    public ResponseEntity<ResponseMessage> getIndexesLinear(
+            @Valid @RequestBody GenomeIndexesRequest request) {
+        try {
+            return genomeService.getIndexesLinear(request);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping()
     public ResponseEntity<ResponseMessage> getGenomes() {
         try {

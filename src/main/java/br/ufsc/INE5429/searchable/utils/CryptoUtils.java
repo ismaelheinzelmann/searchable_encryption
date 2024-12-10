@@ -14,6 +14,14 @@ public class CryptoUtils {
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
+    public static String decrypt(String encryptedText, String key) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
+        return new String(decryptedBytes);
+    }
+
     public static String hashGenomeSubsequence(String subsequence) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hashBytes = digest.digest(subsequence.getBytes());
